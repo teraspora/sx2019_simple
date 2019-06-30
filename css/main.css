@@ -384,3 +384,25 @@ body {
     background-color: #000000;
     border: 2px solid #00aaff;
 }
+
+#controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 1vh;
+    border: 2px solid #00aaff;
+    border-radius: 5px;
+    padding: 1vw;
+    background-color: #000000;
+}
+
+.sh-btn, input {
+    border-radius: 5px;
+    background-color: #0049c4;
+    color: #ffae18;
+    margin: 1vw;
+
+}
+
+.sh-btn {
+    font-size: 1.4vw;
+}
