@@ -3,7 +3,7 @@
 
 // Get reference to canvas, set dimensions
 const canvas = document.getElementById(`canv0`);
-let [w, h] = [window.innerWidth - 400, window.innerHeight - 200];
+let [w, h] = [window.innerHeight - 200, window.innerHeight - 200];
 [canvas.width, canvas.height] = [w, h];
 
 // Link canvas to a WebGL context
@@ -11,13 +11,13 @@ const gl = canvas.getContext(`webgl`) || canvas.getContext(`experimental-webgl`)
 
 // Initialise context
 gl.viewport(0, 0, w, h);
-gl.clearColor(0.03, 0, 0.2, 1);
+gl.clearColor(0.0, 0, 0.0, 1);
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 // Create some points to send to the vertex shader and set up a buffer for passing them to the GPU
 const triangleVertices = [
     //  x       y       R       G       B   
-        0.0,    0.5,    1.0,    1.0,    0.0,
+        0.0,    0.366,  1.0,    1.0,    0.0,
         -0.5,   -0.5,   0.7,    0.1,    1.0,
         0.5,    -0.5,   0.1,    1.0,    0.4,
 ];
@@ -32,11 +32,11 @@ let fs_input = document.getElementById('fs-code-input');
 
 // t0 will store the initial time, just before first render
 let t0;
+let time_location
 
 // Set up uniforms
 let uniforms = {};
 uniforms.u_time = {type: 'f', value: 0.0};
-
 // Listen for user choosing the shader files
 for (let input of [vs_input, fs_input]) {
   input.addEventListener('change', handleFileSelect, false);  
@@ -108,6 +108,8 @@ function linkShaders() {
     linkAttributes(program);
     t0 = Date.now();
     gl.useProgram(program);
+
+    time_location = gl.getUniformLocation(program, `u_time`);
     render(program);  
 }
 
@@ -143,6 +145,8 @@ function linkAttributes(program) {
 function render(program) {
     if (!paused) {
         uniforms.u_time.value = 0.001 * (Date.now() - t0);
+        gl.uniform1f(time_location, uniforms.u_time.value);
+
         // uniforms.u_resolution.value.x = w;
         // uniforms.u_resolution.value.y = h;           
         gl.drawArrays(
@@ -150,6 +154,7 @@ function render(program) {
             0,              // How many vertices to skip
             3,              // How many vertices to draw
         );
+        requestAnimationFrame(render);
     }
 }
 
