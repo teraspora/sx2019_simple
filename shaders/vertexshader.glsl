@@ -3,6 +3,8 @@ precision mediump float;
 attribute vec2 vertPosition;
 attribute vec3 vertColour;
 
+uniform float u_time;
+
 varying vec3 fragColour;
 
 void main() {

@@ -1,8 +1,11 @@
 precision mediump float;
 
+uniform float u_time;
+
 varying vec3 fragColour;
 
 void main() {
-    // vec3 col = vec3(0.0, 0.3, 0.6);
-    gl_FragColor = vec4(fragColour, 1.0);
+    vec3 col = fragColour;
+    col.x = cos(u_time);
+    gl_FragColor = vec4(col, 1.0);
 }
