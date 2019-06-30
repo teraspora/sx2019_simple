@@ -16,11 +16,11 @@ gl.clearColor(0.03, 0, 0.2, 1);
 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 const triangleVertices = [
-    //  x       y
-        0.0,    0.5,
-        -0.5,   -0.5,
-        0.5,    -0.5,
-]
+    //  x       y       R       G       B   
+        0.0,    0.5,    1.0,    1.0,    0.0,
+        -0.5,   -0.5,   0.7,    0.1,    1.0,
+        0.5,    -0.5,   0.1,    1.0,    0.4,
+];
 let triangleVertexBufferObject = gl.createBuffer();
 
 let vShaderCode, fShaderCode;   // strings read from user-specified files
@@ -44,7 +44,7 @@ function handleFileSelect(e0) {
         if (e1.target.readyState == FileReader.DONE) {
             if (e0.target === vs_input) {
                 vShaderCode = rdr.result;
-                console.log(vShaderCode);
+                console.log(`*** Vertex shader source code *** \n\n${vShaderCode}\n`);
                 // Load vertex shader code
                 vertexShader = gl.createShader(gl.VERTEX_SHADER);
                 gl.shaderSource(vertexShader, vShaderCode);
@@ -60,7 +60,7 @@ function handleFileSelect(e0) {
             }
             else if (e0.target === fs_input) {
                 fShaderCode = rdr.result;
-                console.log(fShaderCode);
+                console.log(`*** Fragment shader source code *** \n\n${fShaderCode}\n`);
                 // Load fragment shader code
                 fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
                 gl.shaderSource(fragmentShader, fShaderCode);
@@ -106,16 +106,26 @@ function setupBuffers() {
 
 function linkAttributes(program) {
     let positionAttribLocation = gl.getAttribLocation(program, `vertPosition`);
+    let colourAttribLocation = gl.getAttribLocation(program, `vertColour`);
     gl.vertexAttribPointer(
         positionAttribLocation,  // Attribute location
         2,                                         // Number of elements per attribute
         gl.FLOAT,                                  // Type of elements
         gl.FALSE,                                  // Whether data is normalised
-        2 * Float32Array.BYTES_PER_ELEMENT,        // Size of an individual vertex
+        5 * Float32Array.BYTES_PER_ELEMENT,        // Size of an individual vertex
         0,                                         // Offset from beginning of a single vertex to this attribute
+    );
+    gl.vertexAttribPointer(
+        colourAttribLocation,  // Attribute location
+        3,                                         // Number of elements per attribute
+        gl.FLOAT,                                  // Type of elements
+        gl.FALSE,                                  // Whether data is normalised
+        5 * Float32Array.BYTES_PER_ELEMENT,        // Size of an individual vertex
+        2 * Float32Array.BYTES_PER_ELEMENT,        // Offset from beginning of a single vertex to this attribute
     );
 
     gl.enableVertexAttribArray(positionAttribLocation);
+    gl.enableVertexAttribArray(colourAttribLocation);
 }
 
 
