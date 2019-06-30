@@ -30,9 +30,8 @@ let vertexShader, fragmentShader;
 let vs_input = document.getElementById('vs-code-input');
 let fs_input = document.getElementById('fs-code-input');
 
-// t0 will store the initial time, just before first render
-let t0;
-let time_location
+let t0;             // t0 will store the initial time, just before first render
+let time_location;  // time_location will refer to where the GPU stores u_time
 
 // Set up uniforms
 let uniforms = {};
@@ -40,8 +39,15 @@ uniforms.u_time = {type: 'f', value: 0.0};
 // Listen for user choosing the shader files
 for (let input of [vs_input, fs_input]) {
   input.addEventListener('change', handleFileSelect, false);  
-} 
-    
+}
+
+// Listen for user clicking Pause / Run
+document.getElementById("sh-btn-pause").addEventListener('click', function() {
+    paused = !paused;
+    this.textContent = paused ? "Run" : "Pause";  
+    render(); 
+});     
+
 // 3 state booleans: Vertex shader loaded? / Fragment6 shader loaded? / User clicked "Pause"? 
 let [vs_loaded, fs_loaded, paused] = [false, false, false];
 
