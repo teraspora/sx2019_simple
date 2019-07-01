@@ -33,9 +33,13 @@ let fs_input = document.getElementById('fs-code-input');
 let t0;             // t0 will store the initial time, just before first render
 let time_location;  // time_location will refer to where the GPU stores u_time
 
+// 3 state booleans: Vertex shader loaded? / Fragment6 shader loaded? / User clicked "Pause"? 
+let [vs_loaded, fs_loaded, paused] = [false, false, false];
+
 // Set up uniforms
 let uniforms = {};
 uniforms.u_time = {type: 'f', value: 0.0};
+
 // Listen for user choosing the shader files
 for (let input of [vs_input, fs_input]) {
   input.addEventListener('change', handleFileSelect, false);  
@@ -46,11 +50,11 @@ document.getElementById("sh-btn-pause").addEventListener('click', function() {
     paused = !paused;
     this.textContent = paused ? "Run" : "Pause";  
     render(); 
-});     
+});
 
-// 3 state booleans: Vertex shader loaded? / Fragment6 shader loaded? / User clicked "Pause"? 
-let [vs_loaded, fs_loaded, paused] = [false, false, false];
-
+// Read & compile user-selected shader; if no compile errors, set state flag to show it's been loaded;
+// If the other shader's `loaded` flag is also set, then spring into action by initiating linking
+// which leads on to the shaders actually being run.
 function handleFileSelect(e0) {
     f = e0.target.files[0];
     let rdr = new FileReader();
@@ -60,7 +64,7 @@ function handleFileSelect(e0) {
         if (e1.target.readyState == FileReader.DONE) {
             if (e0.target === vs_input) {
                 vShaderCode = rdr.result;
-                console.log(`*** Vertex shader source code *** \n\n${vShaderCode}\n`);
+                console.log(`*** Vertex shader source code *** \n\n${vShaderCode}\n\n`);
                 // Load and compile vertex shader code
                 vertexShader = gl.createShader(gl.VERTEX_SHADER);
                 gl.shaderSource(vertexShader, vShaderCode);
@@ -71,12 +75,13 @@ function handleFileSelect(e0) {
                 }
                 else {
                     vs_loaded = true;
+                    // if both oil and petrol loaded, then start the engine!
                     if (fs_loaded) linkShaders();
                 }
             }
             else if (e0.target === fs_input) {
                 fShaderCode = rdr.result;
-                console.log(`*** Fragment shader source code *** \n\n${fShaderCode}\n`);
+                console.log(`*** Fragment shader source code *** \n\n${fShaderCode}\n\n`);
                 // Load and compile fragment shader code
                 fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
                 gl.shaderSource(fragmentShader, fShaderCode);
@@ -87,6 +92,7 @@ function handleFileSelect(e0) {
                 }
                 else {
                     fs_loaded = true;
+                    // if both oil and petrol loaded, then start the engine!
                     if (vs_loaded) linkShaders();
                 }
             }
@@ -94,6 +100,8 @@ function handleFileSelect(e0) {
     }
 }
 
+// Called from handleFileSelect(); both shaders are now compiled & loaded,
+// so link them into a `program` 
 function linkShaders() {
     console.log(`*** INFO:  Linking shaders... ***`);
     let program = gl.createProgram();
