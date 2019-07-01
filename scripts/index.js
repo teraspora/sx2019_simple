@@ -35,13 +35,14 @@ let fs_input = document.getElementById('fs-code-input');
 
 let t0;             // t0 will store the initial time, just before first render
 let time_location;  // time_location will refer to where the GPU stores u_time
+let resolution_location;    // resolution_location will refer to where GPU stores u_resolution
 
 // 3 state booleans: Vertex shader loaded? / Fragment6 shader loaded? / User clicked "Pause"? 
 let [vs_loaded, fs_loaded, paused] = [false, false, false];
 
 // Set up uniforms
-let uniforms = {};
-uniforms.u_time = {type: 'f', value: 0.0};
+// let uniforms = {};
+// uniforms.u_time = {type: 'f', value: 0.0};
 
 // Listen for user choosing the shader files
 for (let input of [vs_input, fs_input]) {
@@ -127,6 +128,7 @@ function linkShaders() {
     gl.useProgram(program);
 
     time_location = gl.getUniformLocation(program, `u_time`);
+    resolution_location = gl.getUniformLocation(program, `u_resolution`);
     render(program);  
 }
 
@@ -161,11 +163,9 @@ function linkAttributes(program) {
 
 function render(program) {
     if (!paused) {
-        uniforms.u_time.value = 0.001 * (Date.now() - t0);
-        gl.uniform1f(time_location, uniforms.u_time.value);
-
-        // uniforms.u_resolution.value.x = w;
-        // uniforms.u_resolution.value.y = h;           
+        let u_time = 0.001 * (Date.now() - t0);
+        gl.uniform1f(time_location, u_time);
+        gl.uniform2f (resolution_location, w, h);         
         gl.drawArrays(
             gl.TRIANGLES,   // WebGL drawing mode
             0,              // How many vertices to skip

@@ -1,8 +1,13 @@
 precision mediump float;
 
 uniform float u_time;
+uniform vec2 u_resolution;
 
 varying vec3 fragColour;
+
+float arg(vec2 z) {
+    return atan(z.y, z.x);
+}
 
 float om(float x) {
     return 1. - x;
@@ -26,10 +31,11 @@ float ncos(float x) {
 
 void main() {
     vec3 col;
-    col.r = nsin(u_time / 2.0);
-    col.b = ncos(u_time / 7.0);
-    col.g = (nsin(u_time / 5.0) + ncos(u_time / 3.0)) * 0.5;
-
-    // gl_FragColor = vec4((col + fragColour) * 0.5, 1.0);
-    gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);
+    float scale =  1.;
+    float asp = u_resolution.x / u_resolution.y;
+    // Normalized pixel coordinates (y from -1 to 1)
+    vec2 uv = (2. * gl_FragCoord.xy - u_resolution.xy) / (u_resolution.y * scale);
+    col = vec3(nsin(u_time), 0.0, 1.0);
+    col *= step(length(uv), 0.6 + sin(u_time / 2.0) / 8.0 + abs(arg(uv) / 12.57));
+    gl_FragColor = vec4(col, 1.0);
 }

@@ -1,9 +1,11 @@
 precision mediump float;
 
+uniform float u_time;
+uniform vec2 u_resolution;
+
 attribute vec2 vertPosition;
 attribute vec3 vertColour;
 
-uniform float u_time;
 
 varying vec3 fragColour;
 
