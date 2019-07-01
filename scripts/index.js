@@ -17,9 +17,12 @@ gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 // Create some points to send to the vertex shader and set up a buffer for passing them to the GPU
 const triangleVertices = [
     //  x       y       R       G       B   
-        0.0,    0.366,  1.0,    1.0,    0.0,
-        -0.5,   -0.5,   0.7,    0.1,    1.0,
-        0.5,    -0.5,   0.1,    1.0,    0.4,
+        -1.0,    -1.0,   1.0,    1.0,    0.0,
+         1.0,    -1.0,   0.7,    0.1,    1.0,
+        -1.0,     1.0,   0.0,    1.0,    0.4,
+         1.0,    -1.0,   1.0,    0.0,    1.0,
+         1.0,     1.0,   0.7,    0.1,    1.0,
+        -1.0,     1.0,   0.0,    1.0,    1.4,
 ];
 let triangleVertexBufferObject = gl.createBuffer();
 
@@ -166,7 +169,7 @@ function render(program) {
         gl.drawArrays(
             gl.TRIANGLES,   // WebGL drawing mode
             0,              // How many vertices to skip
-            3,              // How many vertices to draw
+            6,              // How many vertices to draw
         );
         requestAnimationFrame(render);
     }

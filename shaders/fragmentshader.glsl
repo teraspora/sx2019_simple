@@ -30,5 +30,6 @@ void main() {
     col.b = ncos(u_time / 7.0);
     col.g = (nsin(u_time / 5.0) + ncos(u_time / 3.0)) * 0.5;
 
-    gl_FragColor = vec4((col + fragColour) * 0.5, 1.0);
+    // gl_FragColor = vec4((col + fragColour) * 0.5, 1.0);
+    gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0);
 }

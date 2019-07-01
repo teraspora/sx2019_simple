@@ -25,5 +25,6 @@ vec2 rotate(vec2 v, float phi) {
 
 void main() {
     fragColour = vertColour;
-    gl_Position = vec4(rotate(vertPosition, u_time), 0.0, 1.0);
+    // gl_Position = vec4(rotate(vertPosition, u_time), 0.0, 1.0);
+    gl_Position = vec4(vertPosition, 0.0, 1.0);
 }
