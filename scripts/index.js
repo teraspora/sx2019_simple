@@ -34,6 +34,7 @@ document.onreadystatechange = () => {
         let vertexShader, fragmentShader;
 
         let t0;             // t0 will store the initial time, just before first render
+        let pause_time;     // pause_time will store the time the user paused rendering
         let time_location;  // time_location will refer to where the GPU stores u_time
         let resolution_location;    // resolution_location will refer to where GPU stores u_resolution
 
@@ -43,6 +44,12 @@ document.onreadystatechange = () => {
         // Listen for user clicking Pause / Run
         document.getElementById("sh-btn-pause").addEventListener('click', function() {
             paused = !paused;
+            if (paused) {
+                pause_time = Date.now();
+            }
+            else {
+                t0 += Date.now() - pause_time;
+            }
             this.textContent = paused ? "Run" : "Pause";  
             render(); 
         });
