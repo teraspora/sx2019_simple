@@ -17,6 +17,7 @@
     
     <div id="controls">
         <button class="sh-btn" id="sh-btn-pause">Pause</button>
+        <button class="sh-btn" id="sh-btn-metric">Euclidean</button>
     </div>
 
     <script src="scripts/index.js"></script>
@@ -133,19 +134,16 @@
             uv.y = abs(uv.y);
             uv = abs(uv);
             
-            float numPoints = 4.;
-            float m = 0.;
             float mind = 100.;
             float ci;
             
             // generate a bunch of random points
-            for (float i = 0.; i < 4.; i++) {
+            for (float i = 0.; i < 3.; i++) {
                 vec2 n = r22(vec2(i));
                 // sin of both components varied with time
                 vec2 p = sin(n * t);
                 // get distance to point
                 float d = minkd(uv, p, 1.);
-                //m += smoothstep(.05, .01, d);
                 if (d < mind) {
                     mind = d;
                     ci = i;
