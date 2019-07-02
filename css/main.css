@@ -377,7 +377,7 @@ body {
 
 #controls {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     margin-top: 1vh;
     padding: 0vw;
     background-color: #000000;
@@ -387,11 +387,20 @@ body {
 
 .sh-btn{
     border-radius: 5px;
-    border: 2px ridge #00aaff;
+    border: 2px ridge #0094ff;
     background-color: #000000;
     color: #ffae18;
     margin: 1vw;
     font-size: 1.4vw;
     width: 10vw;
+    justify-self: center;
+}
+
+.sh-info{
+    background-color: #000000;
+    color: #0094ff;
+    margin: 1vw;
+    font-size: 1.4vw;
+    /*width: 10vw;*/
     justify-self: center;
 }
