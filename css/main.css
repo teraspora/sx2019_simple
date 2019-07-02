@@ -362,12 +362,9 @@ template {
     text-decoration: none;
 }
 
-html {
-    background: #aaaaaa;
-    font-family: sans-serif;
-}
-
 body {
+    font-family: sans-serif;
+    background: #000000;
     display: grid;
     justify-content: center;
     padding-top: 2vh;
@@ -375,14 +372,16 @@ body {
 
 #canv0 {
     background-color: #000000;
-    border: 2px solid #000000;
+    border: 2px solid #ffffff;
 }
 
 #controls {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     margin-top: 1vh;
     padding: 0vw;
     background-color: #000000;
+    border-radius: 5px;
     justify-self: center;
 }
 
@@ -391,8 +390,8 @@ body {
     border: 2px ridge #00aaff;
     background-color: #000000;
     color: #ffae18;
-    margin: 0vw;
+    margin: 1vw;
     font-size: 1.4vw;
-    width: 7vw;
+    width: 10vw;
     justify-self: center;
 }
