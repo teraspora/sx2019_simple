@@ -9,6 +9,7 @@ document.onreadystatechange = () => {
         let canvasSize = Math.min(window.innerHeight, window.innerWidth) - 200;
         let [w, h] = [canvasSize, canvasSize];
         [canvas.width, canvas.height] = [w, h];
+        let [mx, my] = [0.0, 0.0];  // Mouse position in canvas, normalised to range(-1, 1)
 
         // Link canvas to a WebGL context
         const gl = canvas.getContext(`webgl`) || canvas.getContext(`experimental-webgl`);
@@ -37,7 +38,7 @@ document.onreadystatechange = () => {
         let pause_time;     // pause_time will store the time the user paused rendering
         let time_location;  // time_location will refer to where the GPU stores u_time
         let resolution_location;    // resolution_location will refer to where GPU stores u_resolution
-
+        let mouse_location; // mouse_location will refer to where GPU stores u_mouse
         // 3 state booleans: Vertex shader loaded? / Fragment6 shader loaded? / User clicked "Pause"? 
         let [vs_loaded, fs_loaded, paused, euclidean, started] = [false, false, false, false, false];
 
@@ -54,6 +55,7 @@ document.onreadystatechange = () => {
             render(); 
         });
 
+        // Listen for user clicking to change the disance metric
         document.getElementById("sh-btn-metric").addEventListener('click', function() {
             euclidean = !euclidean;
             this.textContent = euclidean ? "Manhattan" : "Euclidean";
@@ -65,6 +67,11 @@ document.onreadystatechange = () => {
             linkShaders(); 
         });
 
+        // Click on Reset button calls reset(), which zeroes the timer t0.
+        document.getElementById("sh-btn-reset").addEventListener('click', reset);
+
+        canvas.onmousemove = handleMouseMove;
+            
         // Get the code text from the script elements.
         vShaderCode = document.scripts[1].text;
         fShaderCode = document.scripts[2].text;
@@ -129,6 +136,7 @@ document.onreadystatechange = () => {
 
             time_location = gl.getUniformLocation(program, `u_time`);
             resolution_location = gl.getUniformLocation(program, `u_resolution`);
+            mouse_location = gl.getUniformLocation(program, `u_mouse`); 
             if (!started) {
                 t0 = Date.now();
             }
@@ -142,8 +150,7 @@ document.onreadystatechange = () => {
         }
 
         function linkAttributes(program) {
-            let positionAttribLocation = gl.getAttribLocation(program, `vertPosition`);
-            let colourAttribLocation = gl.getAttribLocation(program, `vertColour`);
+            let positionAttribLocation = gl.getAttribLocation(program, `vertPosition`)
             gl.vertexAttribPointer(
                 positionAttribLocation,  // Attribute location
                 2,                                         // Number of elements per attribute
@@ -159,7 +166,8 @@ document.onreadystatechange = () => {
             if (!paused) {
                 let u_time = 0.001 * (Date.now() - t0);
                 gl.uniform1f(time_location, u_time);
-                gl.uniform2f (resolution_location, w, h);         
+                gl.uniform2f(resolution_location, w, h);
+                gl.uniform2f(mouse_location, mx, my);         
                 gl.drawArrays(
                     gl.TRIANGLES,   // WebGL drawing mode
                     0,              // How many vertices to skip
@@ -169,6 +177,13 @@ document.onreadystatechange = () => {
             }
         }
 
+        function handleMouseMove(ev) {
+            let bounds = canvas.getBoundingClientRect();
+            console.log(`*** (${ev.clientX - bounds.left}, ${ev.clientY - bounds.top}) ***`);
+            [mx, my] = [2.0 * (ev.clientX - bounds.left) / bounds.width - 1.0,
+                        2.0 * (ev.clientY - bounds.top) / bounds.height - 1.0];            
+        }
+            
         function reset() {
             t0 = Date.now();
         }    
