@@ -11,6 +11,7 @@
     <title>WebGL Test</title>
 </head>
 <body>
+    <div class="sh-info">Move the mouse left or right to change the scale...</div>
     <canvas id="canv0" width="784" height="784" >
         Sorry, WebGL not supported!   Are you on Windows 3.1 or what?
     </canvas>
@@ -18,15 +19,18 @@
     <div id="controls">
         <button class="sh-btn" id="sh-btn-pause">Pause</button>
         <button class="sh-btn" id="sh-btn-metric">Euclidean</button>
+        <button class="sh-btn" id="sh-btn-reset">Reset</button>
     </div>
 
     <script src="scripts/index.js"></script>
     <script id="vcode" type="x-shader/x-vertex" >
         precision mediump float;
+        
+        uniform float u_time;
         uniform vec2 u_resolution;
+        uniform vec2 u_mouse;
 
         attribute vec2 vertPosition;
-        attribute vec3 vertColour;
 
         void main() {
             // gl_Position = vec4(rotate(vertPosition, u_time), 0.0, 1.0);
@@ -43,6 +47,7 @@
 
         uniform float u_time;
         uniform vec2 u_resolution;
+        uniform vec2 u_mouse;
 
         varying vec3 fragColour;
 
@@ -123,7 +128,8 @@
 
         void main() {
             float t = u_time / 3.;
-            float scale = 0.5;
+            vec2 mouseFactor = pow(vec2(2.0), u_mouse * 3.0);
+            float scale = 0.5 * mouseFactor.x;
             
             if (t < 24.) scale += 0.1 * sin(t);
             
@@ -131,14 +137,16 @@
             // Normalized pixel coordinates (y from -1 to 1)
             vec2 uv = (2. * gl_FragCoord.xy - u_resolution.xy) / (u_resolution.y * scale);
                 
-            uv.y = abs(uv.y);
             uv = abs(uv);
-            
+            float temp = uv.y;
+            uv.y += sin(uv.x + t);
+            uv.x += cos(temp + t);
+
             float mind = 100.;
             float ci;
             
             // generate a bunch of random points
-            for (float i = 0.; i < 5.; i++) {
+            for (float i = 0.; i < 4.; i++) {
                 vec2 n = r22(vec2(i));
                 // sin of both components varied with time
                 vec2 p = sin(n * t);
