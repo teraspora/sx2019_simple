@@ -16,3 +16,7 @@ Voronoi shading requires a distance metric, and a button is provided such that t
 
 A "Pause / Run" button is also provided.   Discovering the effect of this button is left as an exercise for the reader!
 
+Ditto for the "Reset" button.
+
+Move the mouse along the x-axis to change the scale.
+
