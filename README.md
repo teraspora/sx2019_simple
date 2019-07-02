@@ -1,5 +1,7 @@
 # sx2019-simple
 
+View this demo at https://teraspora.github.io/sx2019_simple/
+
 A simple single-page demo of using the Javascript WebGL API to load, compile and link a vertex shader and a fragment shader, then render to an HTML5 canvas.
 
 ## Functionality
