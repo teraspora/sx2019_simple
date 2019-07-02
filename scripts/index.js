@@ -6,7 +6,8 @@ document.onreadystatechange = () => {
    
         // Get reference to canvas, set dimensions
         const canvas = document.getElementById(`canv0`);
-        let [w, h] = [window.innerHeight - 200, window.innerHeight - 200];
+        let canvasSize = Math.min(window.innerHeight, window.innerWidth) - 200;
+        let [w, h] = [canvasSize, canvasSize];
         [canvas.width, canvas.height] = [w, h];
 
         // Link canvas to a WebGL context
@@ -19,29 +20,25 @@ document.onreadystatechange = () => {
 
         // Create some points to send to the vertex shader and set up a buffer for passing them to the GPU
         const triangleVertices = [
-            //  x       y       R       G       B   
-                -1.0,    -1.0,   1.0,    1.0,    0.0,
-                 1.0,    -1.0,   0.7,    0.1,    1.0,
-                -1.0,     1.0,   0.0,    1.0,    0.4,
-                 1.0,    -1.0,   1.0,    0.0,    1.0,
-                 1.0,     1.0,   0.7,    0.1,    1.0,
-                -1.0,     1.0,   0.0,    1.0,    1.4,
+            //   x        y        
+                -1.0,    -1.0,
+                 1.0,    -1.0,
+                -1.0,     1.0,
+                 1.0,    -1.0,
+                 1.0,     1.0,
+                -1.0,     1.0,
         ];
         let triangleVertexBufferObject = gl.createBuffer();
 
         let vShaderCode, fShaderCode;   // strings read from user-specified files
         let vertexShader, fragmentShader;
 
-        // Get refs to the input elements that let user choose the files that contain the shader code
-        let vs_input = document.getElementById('vs-code-input');
-        let fs_input = document.getElementById('fs-code-input');
-
         let t0;             // t0 will store the initial time, just before first render
         let time_location;  // time_location will refer to where the GPU stores u_time
         let resolution_location;    // resolution_location will refer to where GPU stores u_resolution
 
         // 3 state booleans: Vertex shader loaded? / Fragment6 shader loaded? / User clicked "Pause"? 
-        let [vs_loaded, fs_loaded, paused] = [false, false, false];
+        let [vs_loaded, fs_loaded, paused, euclidean, started] = [false, false, false, false, false];
 
         // Listen for user clicking Pause / Run
         document.getElementById("sh-btn-pause").addEventListener('click', function() {
@@ -50,6 +47,18 @@ document.onreadystatechange = () => {
             render(); 
         });
 
+        document.getElementById("sh-btn-metric").addEventListener('click', function() {
+            euclidean = !euclidean;
+            this.textContent = euclidean ? "Manhattan" : "Euclidean";
+            fShaderCode = euclidean ? fShaderCode.replace(`minkd(uv, p, 1.)`, `minkd(uv, p, 2.)`)
+                                    : fShaderCode.replace(`minkd(uv, p, 2.)`, `minkd(uv, p, 1.)`);
+            gl.shaderSource(fragmentShader, fShaderCode);
+            gl.compileShader(fragmentShader);
+            console.log(`Re-linking shaders...`)  
+            linkShaders(); 
+        });
+
+        // Get the code text from the script elements.
         vShaderCode = document.scripts[1].text;
         fShaderCode = document.scripts[2].text;
 
@@ -109,11 +118,14 @@ document.onreadystatechange = () => {
             }
             setupBuffers();
             linkAttributes(program);
-            t0 = Date.now();
             gl.useProgram(program);
 
             time_location = gl.getUniformLocation(program, `u_time`);
             resolution_location = gl.getUniformLocation(program, `u_resolution`);
+            if (!started) {
+                t0 = Date.now();
+            }
+            started = true;
             render(program);  
         }
 
@@ -130,20 +142,10 @@ document.onreadystatechange = () => {
                 2,                                         // Number of elements per attribute
                 gl.FLOAT,                                  // Type of elements
                 gl.FALSE,                                  // Whether data is normalised
-                5 * Float32Array.BYTES_PER_ELEMENT,        // Size of an individual vertex
+                2 * Float32Array.BYTES_PER_ELEMENT,        // Size of an individual vertex
                 0,                                         // Offset from beginning of a single vertex to this attribute
             );
-            gl.vertexAttribPointer(
-                colourAttribLocation,  // Attribute location
-                3,                                         // Number of elements per attribute
-                gl.FLOAT,                                  // Type of elements
-                gl.FALSE,                                  // Whether data is normalised
-                5 * Float32Array.BYTES_PER_ELEMENT,        // Size of an individual vertex
-                2 * Float32Array.BYTES_PER_ELEMENT,        // Offset from beginning of a single vertex to this attribute
-            );
-
             gl.enableVertexAttribArray(positionAttribLocation);
-            gl.enableVertexAttribArray(colourAttribLocation);
         }
 
         function render(program) {
