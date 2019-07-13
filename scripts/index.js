@@ -2,15 +2,15 @@
 // (to an HTML5 canvas) a vertex and a fragment shader 
 
 document.onreadystatechange = () => {
-  if (document.readyState === 'complete') {
+    if (document.readyState === 'complete') {
    
         // Get reference to canvas, set dimensions
         const canvas = document.getElementById(`canv0`);
-        let canvasSize = Math.min(window.innerHeight, window.innerWidth) - 200;
-        let [w, h] = [canvasSize, canvasSize];
+        let canvasSize = [window.innerWidth - 200, window.innerHeight - 200];
+        let [w, h] = canvasSize;
         [canvas.width, canvas.height] = [w, h];
         let [mx, my] = [0.0, 0.0];  // Mouse position in canvas, normalised to range(-1, 1)
-
+        
         // Link canvas to a WebGL context
         const gl = canvas.getContext(`webgl`) || canvas.getContext(`experimental-webgl`);
 
@@ -55,12 +55,16 @@ document.onreadystatechange = () => {
             render(); 
         });
 
-        // Listen for user clicking to change the disance metric
+        // Listen for user clicking to change the distance metric
         document.getElementById("sh-btn-metric").addEventListener('click', function() {
             euclidean = !euclidean;
             this.textContent = euclidean ? "Manhattan" : "Euclidean";
             fShaderCode = euclidean ? fShaderCode.replace(`minkd(uv, p, 1.)`, `minkd(uv, p, 2.)`)
-                                    : fShaderCode.replace(`minkd(uv, p, 2.)`, `minkd(uv, p, 1.)`);
+                                                 .replace(`minkl(st, 1.)`, `minkl(st, 2.)`)
+                                                 .replace(`float order = 1.;`, `float order = 2.;`)
+                                    : fShaderCode.replace(`minkd(uv, p, 2.)`, `minkd(uv, p, 1.)`)
+                                                 .replace(`minkl(st, 2.)`, `minkl(st, 1.)`)
+                                                 .replace(`float order = 2.;`, `float order = 1.;`);
             gl.shaderSource(fragmentShader, fShaderCode);
             gl.compileShader(fragmentShader);
             console.log(`Re-linking shaders...`)  
@@ -179,7 +183,6 @@ document.onreadystatechange = () => {
 
         function handleMouseMove(ev) {
             let bounds = canvas.getBoundingClientRect();
-            console.log(`*** (${ev.clientX - bounds.left}, ${ev.clientY - bounds.top}) ***`);
             [mx, my] = [2.0 * (ev.clientX - bounds.left) / bounds.width - 1.0,
                         2.0 * (ev.clientY - bounds.top) / bounds.height - 1.0];            
         }
