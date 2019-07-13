@@ -404,3 +404,12 @@ body {
     /*width: 10vw;*/
     justify-self: center;
 }
+
+.sh-btn:hover {
+  color: red;
+  transform: scale(1.06) translateY(1px);
+}
+
+.sh-btn:focus {
+  background-color: #220000;
+}
