@@ -6,7 +6,7 @@ document.onreadystatechange = () => {
    
         // Get reference to canvas, set dimensions
         const canvas = document.getElementById(`canv0`);
-        let canvasSize = [window.innerWidth - 200, window.innerHeight - 200];
+        let canvasSize = [window.innerWidth - 150, window.innerHeight - 150];
         let [w, h] = canvasSize;
         [canvas.width, canvas.height] = [w, h];
         let [mx, my] = [0.0, 0.0];  // Mouse position in canvas, normalised to range(-1, 1)
